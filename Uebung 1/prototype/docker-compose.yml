@@ -1,0 +1,129 @@
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: hc-homeassistant
+    restart: unless-stopped
+    ports:
+      - "8123:8123"
+    environment:
+      - TZ=Europe/Berlin
+    volumes:
+      - ./homeassistant/config:/config
+    depends_on:
+      - matter-server
+
+  matter-server:
+    image: ghcr.io/home-assistant-libs/python-matter-server:stable
+    container_name: hc-matter-server
+    restart: unless-stopped
+    ports:
+      - "5580:5580"
+    environment:
+      - TZ=Europe/Berlin
+    volumes:
+      - ./matter-server-data:/data
+
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    container_name: hc-mqtt-broker
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mqtt/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mqtt/data:/mosquitto/data
+      - ./mqtt/log:/mosquitto/log
+
+  virtual-light:
+    build:
+      context: ./virtual-light
+    container_name: hc-virtual-light-1
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./virtual-light-data:/root/.matter
+    environment:
+      - MATTER_NODE_ID=virtual-light-1
+      - MATTER_DEVICE_NAME=Virtual Matter Lamp 1
+      - MATTER_VENDOR_NAME=HC Demo
+      - MATTER_PRODUCT_NAME=Virtual Lamp
+      - MATTER_PASSCODE=20202021
+      - MATTER_DISCRIMINATOR=3840
+      - MATTER_PORT=5540
+      - MATTER_STATUS_HTTP_PORT=8090
+
+  virtual-rgb-light:
+    build:
+      context: ./virtual-rgb-light
+    container_name: hc-virtual-rgb-light-1
+    restart: unless-stopped
+    ports:
+      - "8091:8091"
+    volumes:
+      - ./virtual-rgb-light-data:/root/.matter
+    environment:
+      - MATTER_NODE_ID=virtual-rgb-light-1
+      - MATTER_DEVICE_NAME=Virtual RGB Lamp 1
+      - MATTER_VENDOR_NAME=HC Demo
+      - MATTER_PRODUCT_NAME=Virtual RGB Lamp
+      - MATTER_PASSCODE=20202022
+      - MATTER_DISCRIMINATOR=3841
+      - MATTER_PORT=5541
+      - MATTER_STATUS_HTTP_PORT=8091
+
+  virtual-contact-sensor:
+    build:
+      context: ./virtual-contact-sensor
+    container_name: hc-virtual-contact-sensor-1
+    restart: unless-stopped
+    ports:
+      - "8092:8092"
+    volumes:
+      - ./virtual-contact-sensor-data:/root/.matter
+    environment:
+      - MATTER_NODE_ID=virtual-contact-sensor-1
+      - MATTER_DEVICE_NAME=Virtual Contact Sensor 1
+      - MATTER_VENDOR_NAME=HC Demo
+      - MATTER_PRODUCT_NAME=Virtual Contact Sensor
+      - MATTER_PASSCODE=20202023
+      - MATTER_DISCRIMINATOR=3842
+      - MATTER_PORT=5542
+      - MATTER_STATUS_HTTP_PORT=8092
+      - CONTACT_INVERTED=true
+
+  virtual-occupancy-sensor:
+    build:
+      context: ./virtual-occupancy-sensor
+    container_name: hc-virtual-occupancy-sensor-1
+    restart: unless-stopped
+    ports:
+      - "8093:8093"
+    volumes:
+      - ./virtual-occupancy-sensor-data:/root/.matter
+    environment:
+      - MATTER_NODE_ID=virtual-occupancy-sensor-1
+      - MATTER_DEVICE_NAME=Virtual Motion Sensor 1
+      - MATTER_VENDOR_NAME=HC Demo
+      - MATTER_PRODUCT_NAME=Virtual Motion Sensor
+      - MATTER_PASSCODE=20202024
+      - MATTER_DISCRIMINATOR=3843
+      - MATTER_PORT=5543
+      - MATTER_STATUS_HTTP_PORT=8093
+      - MOTION_CLEAR_MS=3500
+
+  virtual-thermostat-mqtt:
+    build:
+      context: ./virtual-thermostat-mqtt
+    container_name: hc-virtual-thermostat-mqtt-1
+    restart: unless-stopped
+    ports:
+      - "8094:8094"
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER_URL=mqtt://mqtt-broker:1883
+      - MQTT_TOPIC_BASE=hc/thermostat/living_room
+      - MQTT_UNIQUE_ID=hc_virtual_thermostat_1
+      - MQTT_NAME=Virtual Thermostat 1
+      - STATUS_HTTP_PORT=8094

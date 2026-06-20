@@ -1,0 +1,25 @@
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Node modules
+node_modules/
+
+# Python venv
+.venv/
+venv/
+
+# Matter data
+Uebung 1/prototype/matter-server-data/
+Uebung 1/prototype/virtual-*-data/
+
+#MQTT data
+Uebung 1/prototype/mqtt/data
+Uebung 1/prototype/mqtt/log
+
+# Home Assistant data
+# Keep HA config and .storage in git so the instance is preconfigured.
+# Ignore only runtime/transient artifacts.
+Uebung 1/prototype/homeassistant/config/
+
+

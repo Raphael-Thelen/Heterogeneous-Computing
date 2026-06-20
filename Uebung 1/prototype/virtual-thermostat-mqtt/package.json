@@ -1,0 +1,12 @@
+{
+  "name": "virtual-mqtt-thermostat",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.mjs"
+  },
+  "dependencies": {
+    "mqtt": "^5.10.0"
+  }
+}
