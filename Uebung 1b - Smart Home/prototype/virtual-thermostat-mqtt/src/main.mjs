@@ -163,7 +163,7 @@ const renderStatusPage = () => `<!doctype html>
           if (!res.ok) return;
           const d = await res.json();
           currentEl.textContent = d.currentTemp.toFixed(1) + ' °C';
-          targetEl.textContent  = (d.hvacMode === 'off') ? ("Ziel: " + d.targetTemp.toFixed(1) + " °C") : "OFF";
+          targetEl.textContent  = (d.hvacMode === 'off') ? "OFF" : ("Ziel: " + d.targetTemp.toFixed(1) + " °C");
           document.body.style.background = (d.hvacMode === 'off') ? '#9a9a9a' : tempToColor(d.currentTemp);
         } catch {}
       };
